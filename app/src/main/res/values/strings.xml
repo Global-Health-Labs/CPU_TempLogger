@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CPU Logger</string>
+    <string name="temperature_format">%.1f °C</string>
+    <string name="temperature_not_available">Temperature not available</string>
+</resources>
