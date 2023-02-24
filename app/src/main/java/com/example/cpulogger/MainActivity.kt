@@ -1,34 +1,25 @@
 package com.example.cpulogger
 
-import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.*
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Process.myPid
 import android.widget.Button
-import android.widget.Toast
 import android.widget.TextView
-import androidx.core.graphics.component1
 import java.io.File
 import java.io.FileWriter
-import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import com.opencsv.CSVWriter
 import java.io.IOException
 import kotlin.concurrent.scheduleAtFixedRate
-import kotlin.coroutines.coroutineContext
-import kotlin.coroutines.jvm.internal.*
-
 
 class MainActivity : AppCompatActivity() {
 
     private val handler = Handler(Looper.getMainLooper())
     private var timer = Timer()
     private var recordingInProgress = false
-//    private val fileNameTest = "testFileName.csv" //to replace with label including timestamp, issue with Runnable
     private lateinit var fileName: String
     private lateinit var recordButton: Button
     private lateinit var thermalZoneFile: File
@@ -37,10 +28,11 @@ class MainActivity : AppCompatActivity() {
     private val temperatureRunnable = object: Runnable{
         override fun run() {
             retrieveAndDisplayTemperature(fileName)
-            handler.postDelayed(this, 10000)
+            handler.postDelayed(this, 1000)
+//            Update display every 10seconds
+
             }
         }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,19 +46,17 @@ class MainActivity : AppCompatActivity() {
 
         val writer = CSVWriter(FileWriter(file))
 
-        val headers = arrayOf("Time", "Battery", "emmc_therm", "pa_therm0", "pm660_tz", "pm660l_tz", "msm_therm", "quiet_therm",
+//        TestGitUpdate
+//        TestGitUpdate2
+
+        val headers = arrayOf("Battery", "emmc_therm", "pa_therm0", "pm660_tz", "pm660l_tz", "msm_therm", "quiet_therm",
         "xo_therm", "tsens_tz_sensor0","tsens_tz_sensor1", "tsens_tz_sensor2", "tsens_tz_sensor3", "tsens_tz_sensor4", "tsens_tz_sensor5",
             "tsens_tz_sensor6", "tsens_tz_sensor7", "tsens_tz_sensor8", "tsens_tz_sensor9","tsens_tz_sensor10", "tsens_tz_sensor11", "tsens_tz_sensor12",
             "tsens_tz_sensor13", "GLM_soc", "LLM_cp1", "LLM_cp0")
 
-//        val headersStrings = arrayOfNulls<String>(headers.size)
-//        headers.copyInto(headersStrings)
-
         val headersList = headers.toList()
 
-
         writeCsvFile(headersList, this, fileName)
-
 
         recordButton = findViewById<Button>(R.id.recordButton)
         recordButton.text = "Start Recording"
@@ -78,32 +68,7 @@ class MainActivity : AppCompatActivity() {
             }else{
                 startRecording()
             }
-
-////            val buttonText = findViewById<TextView>(R.id.recordButton)
-////            buttonText.text = "Stop"
-//            val startNotice = arrayOf("Recording Start")
-////            val startNoticeArr = arrayOfNulls<String>(startNotice.size)
-////            startNotice.copyInto(startNoticeArr)
-//            val startNoticeList = startNotice.toList()
-//
-//            writeCsvFile(startNoticeList, this, fileName)
-//            val recordTask = timer.scheduleAtFixedRate(0,1000){
-//                retrieveAndSaveTemp(fileName)
-//            }
-//
-////            writer.writeNext(startNotice)
         }
-
-//        Results 22-24 & 28,29 are NULL and cause crashes
-
-
-//    Write to external csv upon startup
-//        Create csv of data values
-//        val data = listOf(result0.toString(), result1.toString(), result2.toString(), result3.toString(), result4.toString(), result5.toString(),
-//        result6.toString(), result7.toString(), result8.toString(), result9.toString(), result10.toString(), result11.toString(), result12.toString(),
-//        result13.toString(), result14.toString(), result15.toString(), result16.toString(), result17.toString(), result18.toString(), result19.toString(),
-//        result20.toString(), result21.toString(), result25.toString(),result26.toString(),result27.toString())
-//        writeCsvFile(data, this)
 
         thermalZoneFile = File("sys/class/thermal/thermal_zone0/temp")
         temperatureTextView = findViewById(R.id.resultsTextView)
@@ -111,13 +76,11 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onResume(){
         super.onResume()
-
         handler.postDelayed(temperatureRunnable,0)
     }
 
     override fun onPause(){
         super.onPause()
-
         handler.removeCallbacks(temperatureRunnable)
     }
 
@@ -125,12 +88,12 @@ class MainActivity : AppCompatActivity() {
         recordingInProgress =true
         recordButton.text = "Stop Recording"
         recordButton.backgroundTintList= ColorStateList.valueOf(Color.RED)
-        //            val buttonText = findViewById<TextView>(R.id.recordButton)
-//            buttonText.text = "Stop"
+
         val startNotice = arrayOf("Recording Start").toList()
         writeCsvFile(startNotice, this, fileName)
 
-        val recordTask = timer.scheduleAtFixedRate(0,1000){
+        val recordTask = timer.scheduleAtFixedRate(0,10000){
+//            Save every 10 seconds
             retrieveAndSaveTemp(fileName)
         }
         //            writer.writeNext(startNotice)
@@ -151,7 +114,6 @@ class MainActivity : AppCompatActivity() {
 
         recordButton.backgroundTintList= ColorStateList.valueOf(Color.GREEN)
 
-//        handler.removeCallbacks(temperatureRunnable)
         timer=Timer()
     }
 
@@ -242,11 +204,9 @@ class MainActivity : AppCompatActivity() {
             result11, result12, result13, result14, result15, result16, result17, result18, result19, result20, result21, result25, result26,
             result27)
 
+        //        Results 22-24 & 28,29 are NULL and cause crashes
+
         updateTemperatureDisplay(tempArr)
-
-//        val tempString =tempArr.map {it.toString()}
-
-//        writeCsvFile(tempString, this, filename)
 
     }
 
@@ -281,7 +241,6 @@ class MainActivity : AppCompatActivity() {
             result11, result12, result13, result14, result15, result16, result17, result18, result19, result20, result21, result25, result26,
             result27)
 
-//        updateTemperatureDisplay(tempArr)
 
         val tempString =tempArr.map {it.toString()}
 
