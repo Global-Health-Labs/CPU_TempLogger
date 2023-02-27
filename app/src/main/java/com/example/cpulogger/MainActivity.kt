@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private var timer = Timer()
     private var recordingInProgress = false
+    private var recordingBoolean = false
     private lateinit var fileName: String
     private lateinit var recordButton: Button
     private lateinit var thermalZoneFile: File
@@ -28,8 +29,8 @@ class MainActivity : AppCompatActivity() {
     private val temperatureRunnable = object: Runnable{
         override fun run() {
             retrieveAndDisplayTemperature(fileName)
-            handler.postDelayed(this, 1000)
-//            Update display every 10seconds
+            handler.postDelayed(this, 5000)
+//            Update display every 5seconds
 
             }
         }
@@ -91,30 +92,33 @@ class MainActivity : AppCompatActivity() {
 
         val startNotice = arrayOf("Recording Start").toList()
         writeCsvFile(startNotice, this, fileName)
+        recordingBoolean = true
 
-        val recordTask = timer.scheduleAtFixedRate(0,10000){
-//            Save every 10 seconds
-            retrieveAndSaveTemp(fileName)
-        }
+//        val recordTask = timer.scheduleAtFixedRate(0,5000){
+////            Save every 10 seconds
+//            retrieveAndSaveTemp(fileName)
+//        }
         //            writer.writeNext(startNotice)
-        handler.postDelayed(temperatureRunnable,0)
+//        handler.postDelayed(temperatureRunnable,0)
     }
 
     fun stopRecording(){
         recordingInProgress = false
         recordButton.text = "Start Recording"
 
-        timer.cancel()
-        timer.purge()
+//        timer.cancel()
+//        timer.purge()
 
         stopWritingToCSV(fileName)
 
         val stopNotice = arrayOf("Recording Stopped").toList()
         writeCsvFile(stopNotice, this, fileName)
 
+        recordingBoolean =false
+
         recordButton.backgroundTintList= ColorStateList.valueOf(Color.GREEN)
 
-        timer=Timer()
+//        timer=Timer()
     }
 
 
@@ -207,46 +211,52 @@ class MainActivity : AppCompatActivity() {
         //        Results 22-24 & 28,29 are NULL and cause crashes
 
         updateTemperatureDisplay(tempArr)
+        if (recordingBoolean) {
+            val tempString =tempArr.map {it.toString()}
+            writeCsvFile(tempString, this, filename)
+        }else{
+
+        }
 
     }
 
-    private fun retrieveAndSaveTemp(filename: String){
-        val result0 = getCpuTemperature("sys/class/thermal/thermal_zone0/temp")
-        val result1 = getCpuTemperature("sys/class/thermal/thermal_zone1/temp")
-        val result2 = getCpuTemperature("sys/class/thermal/thermal_zone2/temp")
-        val result3 = getCpuTemperature("sys/class/thermal/thermal_zone3/temp")
-        val result4 = getCpuTemperature("sys/class/thermal/thermal_zone4/temp")
-        val result5 = getCpuTemperature("sys/class/thermal/thermal_zone5/temp")
-        val result6 = getCpuTemperature("sys/class/thermal/thermal_zone6/temp")
-        val result7 = getCpuTemperature("sys/class/thermal/thermal_zone7/temp")
-        val result8 = getCpuTemperature("sys/class/thermal/thermal_zone8/temp")
-        val result9 = getCpuTemperature("sys/class/thermal/thermal_zone9/temp")
-        val result10 = getCpuTemperature("sys/class/thermal/thermal_zone10/temp")
-        val result11 = getCpuTemperature("sys/class/thermal/thermal_zone11/temp")
-        val result12 = getCpuTemperature("sys/class/thermal/thermal_zone12/temp")
-        val result13 = getCpuTemperature("sys/class/thermal/thermal_zone13/temp")
-        val result14 = getCpuTemperature("sys/class/thermal/thermal_zone14/temp")
-        val result15 = getCpuTemperature("sys/class/thermal/thermal_zone15/temp")
-        val result16 = getCpuTemperature("sys/class/thermal/thermal_zone16/temp")
-        val result17 = getCpuTemperature("sys/class/thermal/thermal_zone17/temp")
-        val result18 = getCpuTemperature("sys/class/thermal/thermal_zone18/temp")
-        val result19 = getCpuTemperature("sys/class/thermal/thermal_zone19/temp")
-        val result20 = getCpuTemperature("sys/class/thermal/thermal_zone20/temp")
-        val result21 = getCpuTemperature("sys/class/thermal/thermal_zone21/temp")
-        val result25 = getCpuTemperature("sys/class/thermal/thermal_zone25/temp")
-        val result26 = getCpuTemperature("sys/class/thermal/thermal_zone26/temp")
-        val result27 = getCpuTemperature("sys/class/thermal/thermal_zone27/temp")
-
-        val tempArr = floatArrayOf(result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10,
-            result11, result12, result13, result14, result15, result16, result17, result18, result19, result20, result21, result25, result26,
-            result27)
-
-
-        val tempString =tempArr.map {it.toString()}
-
-        writeCsvFile(tempString, this, filename)
-
-    }
+//    private fun retrieveAndSaveTemp(filename: String){
+//        val result0 = getCpuTemperature("sys/class/thermal/thermal_zone0/temp")
+//        val result1 = getCpuTemperature("sys/class/thermal/thermal_zone1/temp")
+//        val result2 = getCpuTemperature("sys/class/thermal/thermal_zone2/temp")
+//        val result3 = getCpuTemperature("sys/class/thermal/thermal_zone3/temp")
+//        val result4 = getCpuTemperature("sys/class/thermal/thermal_zone4/temp")
+//        val result5 = getCpuTemperature("sys/class/thermal/thermal_zone5/temp")
+//        val result6 = getCpuTemperature("sys/class/thermal/thermal_zone6/temp")
+//        val result7 = getCpuTemperature("sys/class/thermal/thermal_zone7/temp")
+//        val result8 = getCpuTemperature("sys/class/thermal/thermal_zone8/temp")
+//        val result9 = getCpuTemperature("sys/class/thermal/thermal_zone9/temp")
+//        val result10 = getCpuTemperature("sys/class/thermal/thermal_zone10/temp")
+//        val result11 = getCpuTemperature("sys/class/thermal/thermal_zone11/temp")
+//        val result12 = getCpuTemperature("sys/class/thermal/thermal_zone12/temp")
+//        val result13 = getCpuTemperature("sys/class/thermal/thermal_zone13/temp")
+//        val result14 = getCpuTemperature("sys/class/thermal/thermal_zone14/temp")
+//        val result15 = getCpuTemperature("sys/class/thermal/thermal_zone15/temp")
+//        val result16 = getCpuTemperature("sys/class/thermal/thermal_zone16/temp")
+//        val result17 = getCpuTemperature("sys/class/thermal/thermal_zone17/temp")
+//        val result18 = getCpuTemperature("sys/class/thermal/thermal_zone18/temp")
+//        val result19 = getCpuTemperature("sys/class/thermal/thermal_zone19/temp")
+//        val result20 = getCpuTemperature("sys/class/thermal/thermal_zone20/temp")
+//        val result21 = getCpuTemperature("sys/class/thermal/thermal_zone21/temp")
+//        val result25 = getCpuTemperature("sys/class/thermal/thermal_zone25/temp")
+//        val result26 = getCpuTemperature("sys/class/thermal/thermal_zone26/temp")
+//        val result27 = getCpuTemperature("sys/class/thermal/thermal_zone27/temp")
+//
+//        val tempArr = floatArrayOf(result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10,
+//            result11, result12, result13, result14, result15, result16, result17, result18, result19, result20, result21, result25, result26,
+//            result27)
+//
+//
+//        val tempString =tempArr.map {it.toString()}
+//
+//        writeCsvFile(tempString, this, filename)
+//
+//    }
 
 }
 
